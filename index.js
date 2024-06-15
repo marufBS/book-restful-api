@@ -10,10 +10,12 @@ app.use(express.urlencoded({ extended: true }))
 app.use(cors())
 
 const port = 3001
+const mongooseString = 'mongodb+srv://libmbs266:sxjRlfI0ztAafLi8@librarycluster.uy7ds2m.mongodb.net/Library'
+// const mongooseString = 'mongodb://localhost:27017/library'
 
 const connectDB = async () => {
     try {
-        await mongoose.connect('mongodb://localhost:27017/library')
+        await mongoose.connect(mongooseString)
         console.log('Library Database Connected')
 
     } catch (error) {
@@ -48,6 +50,7 @@ app.get('/', (req, res) => {
 
 app.post('/api/books', async (req, res) => {
     try {
+        console.log(req.body)
         const { title, author, genre, description, publishedDate } = req.body
         const item = new Book({
             title, author, genre, description, publishedDate
@@ -74,10 +77,12 @@ app.post('/api/books', async (req, res) => {
 app.get('/api/books', async (req, res) => {
     try {
         const books = await Book.find()
+        const booksCount = await Book.countDocuments()
         if (books) {
             res.status(201).send({
                 success: true,
                 message: 'returned all books',
+                docs:booksCount,
                 data: books
             })
         } else {
